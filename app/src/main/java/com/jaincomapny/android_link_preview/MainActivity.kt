@@ -75,6 +75,16 @@ fun LinkPreviewScreen(modifier: Modifier = Modifier, viewModel: LinkPreviewViewM
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(
+            text = "Link Preview",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Text(
+            text = "Enter a URL to preview",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
         BasicTextField(
             value = url,
             onValueChange = { url = it },
