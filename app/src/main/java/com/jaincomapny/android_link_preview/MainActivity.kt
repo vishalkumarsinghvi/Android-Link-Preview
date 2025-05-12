@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
@@ -50,7 +51,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AndroidLinkPreviewTheme {
-                val linkPreviewViewModel = ViewModelProvider(this@MainActivity)[LinkPreviewViewModel::class.java]
+                val linkPreviewViewModel =
+                    ViewModelProvider(this@MainActivity)[LinkPreviewViewModel::class.java]
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     LinkPreviewScreen(
                         modifier = Modifier.padding(innerPadding), viewModel = linkPreviewViewModel
@@ -67,90 +69,140 @@ fun LinkPreviewScreen(modifier: Modifier = Modifier, viewModel: LinkPreviewViewM
     var url by remember { mutableStateOf(TextFieldValue("")) }
     val previewData = viewModel.linkPreviewData.collectAsState(null)
     val isLoading = viewModel.isLoading.collectAsState()
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    Box(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "Link Preview",
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        Text(
-            text = "Enter a URL to preview",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        BasicTextField(
-            value = url,
-            onValueChange = { url = it },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .background(Color.LightGray, RoundedCornerShape(8.dp))
-                .padding(12.dp)
+                .padding(vertical = 16.dp)
+                .statusBarsPadding()
         )
-
-        Button(
-            onClick = {
-                viewModel.fetchLinkPreviewData(url.text)
-            }, modifier = Modifier.padding(top = 8.dp)
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Submit")
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (isLoading.value) {
-            Box(
+            Text(
+                text = "Enter a URL to preview",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .padding()
+                    .align(Alignment.Start)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            BasicTextField(
+                value = url,
+                onValueChange = {
+                    url = it
+                    errorMessage = null
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .placeholder(
-                        visible = true, highlight = PlaceholderHighlight.shimmer(), // ✅ no deprecation
-                        color = Color.Gray.copy(alpha = 0.3f), shape = RoundedCornerShape(12.dp)
-                    ), contentAlignment = Alignment.Center
-            ) {
-                Box(
+                    .background(Color.LightGray, RoundedCornerShape(8.dp))
+                    .padding(12.dp)
+            )
+
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Gray.copy(alpha = 0.3f))
+                        .fillMaxWidth()
+                        .padding(top = 12.dp)
                 )
             }
-        } else {
-            previewData.value?.let {
-                Card(
-                    modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)
+
+
+            Button(
+                onClick = {
+                    val finalUrl = url.text.trim()
+                    val formattedUrl = when {
+                        finalUrl.isBlank() -> {
+                            viewModel.fetchLinkPreviewData("")
+                            errorMessage = "URL cannot be empty."
+                            null
+                        }
+
+                        finalUrl.startsWith("http://") -> {
+                            errorMessage = "http:// URLs are not supported. Please use https://"
+                            null
+                        }
+
+                        finalUrl.startsWith("https://") -> finalUrl
+                        else -> "https://$finalUrl"
+                    }
+
+                    if (formattedUrl != null) {
+                        viewModel.fetchLinkPreviewData(formattedUrl)
+                    }
+                }, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                Text("Submit")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (isLoading.value) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .placeholder(
+                            visible = true,
+                            highlight = PlaceholderHighlight.shimmer(), // ✅ no deprecation
+                            color = Color.Gray.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(12.dp)
+                        ), contentAlignment = Alignment.Center
                 ) {
-                    Log.d("TAG", "LinkPreviewScreen: " + it.imageUrl)
-                    Row {
-                        GlideImage(
-                            model = it.imageUrl,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .background(color = Color.Gray)
-                        )
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = it.title ?: "No Title", style = MaterialTheme.typography.titleMedium)
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = it.description ?: "No Description",
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Gray.copy(alpha = 0.3f))
+                    )
+                }
+            } else {
+                previewData.value?.let {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Log.d("TAG", "LinkPreviewScreen: " + it.imageUrl)
+                        Row {
+                            GlideImage(
+                                model = it.imageUrl,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .background(color = Color.Gray)
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = it.url ?: "No URL", style = MaterialTheme.typography.labelSmall)
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = it.title ?: "No Title",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = it.description ?: "No Description",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = it.url ?: "No URL",
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
                         }
                     }
                 }
             }
+
         }
     }
 }
