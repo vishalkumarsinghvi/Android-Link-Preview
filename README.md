@@ -51,6 +51,14 @@ To generate a link preview, simply pass the URL to the `LinkPreviewGenerator`:
 import com.vishalkumarsinghvi.linkpreview.LinkPreviewGenerator
 import com.vishalkumarsinghvi.linkpreview.model.LinkPreviewData
 
+data class LinkPreviewData(
+    val title: String? = null,
+    val description: String? = null,
+    val imageUrl: String? = null,
+    val url: String? = null,
+    @LinkPreviewType val linkContentType: Int = LinkPreviewType.WEBPAGE,
+)
+
 fun generateLinkPreview(url: String) {
     val previewData: LinkPreviewData? = LinkMetadataParser.parse(url)
     previewData?.let {
