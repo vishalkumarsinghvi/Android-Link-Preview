@@ -52,11 +52,13 @@ import com.vishalkumarsinghvi.linkpreview.LinkPreviewGenerator
 import com.vishalkumarsinghvi.linkpreview.model.LinkPreviewData
 
 fun generateLinkPreview(url: String) {
-    val previewData: LinkPreviewData? = LinkPreviewGenerator.generate(url)
+    val previewData: LinkPreviewData? = LinkMetadataParser.parse(url)
     previewData?.let {
         println("Title: ${it.title}")
         println("Description: ${it.description}")
         println("Image URL: ${it.imageUrl}")
+        println("Web URL: ${it.url}")
+        println("Link type: ${it.linkContentType}") // 0 -> webpage , 1-> profile (FB,insta) , 2-> Video
     }
 }
 ```
