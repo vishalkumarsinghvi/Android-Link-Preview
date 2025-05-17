@@ -1,6 +1,7 @@
-plugins {
+ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+     id("maven-publish")
 }
 
 android {
@@ -40,3 +41,17 @@ dependencies {
     implementation(libs.jsoup)
     implementation(libs.okhttp)
 }
+
+ afterEvaluate {
+     publishing {
+         publications {
+             create<MavenPublication>("release") {
+                 from(components["release"])
+
+                 groupId = "com.github.vishalkumarsinghvi"
+                 artifactId = "android-link-preview"
+                 version = "1.1"
+             }
+         }
+     }
+ }
