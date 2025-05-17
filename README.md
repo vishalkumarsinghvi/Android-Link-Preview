@@ -33,7 +33,7 @@ In your module-level `build.gradle` file, add the following dependency:
 
 ```gradle
 dependencies {
-    implementation 'com.github.vishalkumarsinghvi:Android-Link-Preview:Tag'
+    implementation 'com.github.vishalkumarsinghvi:Android-Link-Preview:1.1'
 }
 ```
 
