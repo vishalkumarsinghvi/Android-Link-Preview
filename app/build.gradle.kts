@@ -1,7 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 }
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) load(file.inputStream())
+}
+val admobAppId = localProperties.getProperty("ADMOB_APP_ID", "")
+val admobAdUnitId = localProperties.getProperty("ADMOB_AD_UNIT_ID", "")
 
 android {
     namespace = "com.jaincomapny.android_link_preview"
@@ -15,6 +24,8 @@ android {
         versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["admobAppId"] = admobAppId
+        buildConfigField("String", "ADMOB_AD_UNIT_ID", "\"$admobAdUnitId\"")
     }
 
     buildTypes {
@@ -37,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -59,5 +71,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.accompanist.placeholder.material3)
     implementation(libs.compose)
+    implementation(libs.play.services.ads)
+    implementation(libs.okhttp)
+    implementation(libs.androidx.material.icons.extended)
 
 }
