@@ -1,12 +1,11 @@
  plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
      id("maven-publish")
 }
 
 android {
     namespace = "com.jaincomapny.androidlinkpreview"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 23
@@ -22,11 +21,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        jvmToolchain(17)
+    }
+    publishing {
+        singleVariant("release")
     }
 }
 
