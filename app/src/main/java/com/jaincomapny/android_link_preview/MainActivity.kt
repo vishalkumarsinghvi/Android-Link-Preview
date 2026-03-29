@@ -237,7 +237,6 @@ fun SingleLinkPreviewContent(viewModel: LinkPreviewViewModel, onDownloadItem: (B
                                 .align(Alignment.TopEnd)
                                 .padding(6.dp)
                                 .size(36.dp)
-                                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.SaveAlt,
