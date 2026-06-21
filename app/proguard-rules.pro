@@ -53,6 +53,14 @@
     <init>(...);
 }
 
+# ── WorkManager + Room ────────────────────────────────────────────────────────
+# WorkManager uses Room internally (WorkDatabase); R8 strips the generated
+# _Impl class unless these rules are present. Firebase/AdMob pull in WorkManager
+# as a transitive dep, so this is required even without direct WorkManager usage.
+-keep class androidx.work.** { *; }
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keep @androidx.room.Database class * { *; }
+
 # ── Models (Keep data classes to avoid issues with reflection/parsers) ────────
 # We keep all classes in these packages to ensure no business logic is stripped
 -keep class com.jaincomapny.androidlinkpreview.** { *; }

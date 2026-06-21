@@ -35,7 +35,7 @@ android {
         applicationId = "com.jaincomapny.android_link_preview"
         minSdk = 23
         targetSdk = 36
-        versionCode = 5
+        versionCode = 6
         versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
