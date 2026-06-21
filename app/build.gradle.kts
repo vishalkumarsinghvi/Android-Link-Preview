@@ -35,8 +35,8 @@ android {
         applicationId = "com.jaincomapny.android_link_preview"
         minSdk = 23
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.2"
+        versionCode = 5
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["admobAppId"] = admobAppId
