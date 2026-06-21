@@ -66,12 +66,13 @@ import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var adManager: AdManager
+    private var adManager: AdManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MobileAds.initialize(this)
-        adManager = AdManager(this)
+        MobileAds.initialize(this) {
+            adManager = AdManager(this)
+        }
         enableEdgeToEdge()
         setContent {
             AndroidLinkPreviewTheme {
@@ -88,7 +89,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun downloadWithAd(item: BulkPreviewItem) {
-        adManager.showAdThenDownload(this) {
+        val mgr = adManager ?: AdManager(this).also { adManager = it }
+        mgr.showAdThenDownload(this) {
             lifecycleScope.launch(Dispatchers.IO) {
                 val success = PdfExporter.export(this@MainActivity, item)
                 withContext(Dispatchers.Main) {

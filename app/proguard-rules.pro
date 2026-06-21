@@ -1,24 +1,65 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ── Crash stack traces ────────────────────────────────────────────────────────
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# ── Kotlin Essentials ─────────────────────────────────────────────────────────
+-keepclassmembers class **$WhenMappings {
+    <fields>;
+}
+-keepclassmembers class kotlin.Metadata {
+    <methods>;
+}
+-dontwarn kotlin.jvm.internal.ReflectionFactory
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# ── Kotlin Coroutines ─────────────────────────────────────────────────────────
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepnames class kotlinx.coroutines.android.AndroidExceptionPreHandler {}
+-keepnames class kotlinx.coroutines.android.AndroidDispatcherFactory {}
+-keepclassmembernames class kotlinx.coroutines.android.HandlerContext {
+    private final android.os.Handler handler;
+}
+-dontwarn kotlinx.coroutines.**
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# ── OkHttp 5.x ───────────────────────────────────────────────────────────────
+-dontwarn okhttp3.internal.platform.**
+-dontwarn okio.**
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+-keep class okhttp3.internal.platform.** { *; }
 
+# ── Jsoup ─────────────────────────────────────────────────────────────────────
+-keep class org.jsoup.** { *; }
+-keepclassmembers class org.jsoup.** { *; }
+
+# ── Google Mobile Ads (AdMob) & Play Services ─────────────────────────────────
+-keep class com.google.android.gms.ads.** { *; }
+-keep class com.google.ads.** { *; }
+-keep interface com.google.android.gms.ads.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.android.gms.**
+
+# ── Firebase ──────────────────────────────────────────────────────────────────
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
+
+# ── Glide ─────────────────────────────────────────────────────────────────────
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public class * extends com.bumptech.glide.module.LibraryGlideModule
+-keep class com.bumptech.glide.GeneratedAppGlideModuleImpl
+-dontwarn com.bumptech.glide.load.resource.bitmap.VideoDecoder
+
+# ── AndroidX Lifecycle & ViewModel ───────────────────────────────────────────
+-keepclassmembers class * extends androidx.lifecycle.ViewModel {
+    <init>(...);
+}
+
+# ── Models (Keep data classes to avoid issues with reflection/parsers) ────────
+# We keep all classes in these packages to ensure no business logic is stripped
+-keep class com.jaincomapny.androidlinkpreview.** { *; }
+-keep class com.jaincomapny.android_link_preview.** { *; }
+
+# ── Suppress known-safe missing-class warnings ───────────────────────────────
 -dontwarn com.google.re2j.Matcher
 -dontwarn com.google.re2j.Pattern
+-dontwarn javax.annotation.**
+-dontwarn org.checkerframework.**

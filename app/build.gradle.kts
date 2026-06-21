@@ -3,6 +3,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 val localProperties = Properties().apply {
@@ -11,10 +13,23 @@ val localProperties = Properties().apply {
 }
 val admobAppId = localProperties.getProperty("ADMOB_APP_ID", "")
 val admobAdUnitId = localProperties.getProperty("ADMOB_AD_UNIT_ID", "")
+val keystorePath = localProperties.getProperty("KEYSTORE_PATH", "")
+val keystorePassword = localProperties.getProperty("KEYSTORE_PASSWORD", "")
+val keystoreKeyAlias = localProperties.getProperty("KEY_ALIAS", "")
+val keystoreKeyPassword = localProperties.getProperty("KEY_PASSWORD", "")
 
 android {
     namespace = "com.jaincomapny.android_link_preview"
     compileSdk = 36
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystorePath)
+            storePassword = keystorePassword
+            keyAlias = keystoreKeyAlias
+            keyPassword = keystoreKeyPassword
+        }
+    }
 
     defaultConfig {
         applicationId = "com.jaincomapny.android_link_preview"
@@ -37,6 +52,7 @@ android {
             isShrinkResources = true
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -75,4 +91,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.androidx.material.icons.extended)
 
+    // Firebase (BOM manages all Firebase library versions)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 }

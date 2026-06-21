@@ -20,7 +20,6 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 class AdManager(context: Context) {
 
     private val adUnitId = BuildConfig.ADMOB_AD_UNIT_ID
-
     private var interstitialAd: InterstitialAd? = null
     private val appContext = context.applicationContext
 
@@ -55,11 +54,11 @@ class AdManager(context: Context) {
             loadAd()
             return
         }
-        interstitialAd = null // consume — don't show the same ad twice
+        interstitialAd = null
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 onComplete()
-                loadAd() // preload next
+                loadAd()
             }
             override fun onAdFailedToShowFullScreenContent(error: AdError) {
                 onComplete()
@@ -67,5 +66,9 @@ class AdManager(context: Context) {
             }
         }
         ad.show(activity)
+    }
+
+    companion object {
+        private const val TAG = "AdManager"
     }
 }
